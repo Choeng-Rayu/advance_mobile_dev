@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 class BlaButton extends StatelessWidget {
   final String title;
   final Color color;
-  final Icon icon;
+  final Icon? icon;
   final VoidCallback onTap;
 
   const BlaButton({
@@ -40,13 +40,17 @@ class BlaButton extends StatelessWidget {
         backgroundColor: color,
         padding: const EdgeInsets.symmetric(vertical: BlaSpacings.m, horizontal: BlaSpacings.m),
       ),
-      child: ListTile(
-        leading: icon, 
-        title: Text(
-          title,
-          style: BlaTextStyles.button.copyWith(color: Colors.white),
-        ),
-      )
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (icon != null) icon!,
+          if (icon != null) const SizedBox(width: 8), 
+          Text(
+            title,
+            style: BlaTextStyles.button.copyWith(color: Colors.white),
+          ),
+        ],
+      ),
     );
   }
 }
