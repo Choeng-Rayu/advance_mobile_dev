@@ -37,11 +37,15 @@ class BlaButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onTap, 
       style: ElevatedButton.styleFrom(
-        backgroundColor: BlaColors.primary,
+        backgroundColor: color,
+        padding: const EdgeInsets.symmetric(vertical: BlaSpacings.m, horizontal: BlaSpacings.m),
       ),
       child: ListTile(
         leading: icon, 
-        title: Text(title),
+        title: Text(
+          title,
+          style: BlaTextStyles.button.copyWith(color: Colors.white),
+        ),
       )
     );
   }
