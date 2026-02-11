@@ -4,6 +4,7 @@ import '../../../../utils/date_time_utils.dart';
 import '../../../widgets/actions/blaButton.dart';
 import '../../../../model/ride/locations.dart';
 import '../../../../model/ride_pref/ride_pref.dart';
+import '../widgets/location_picker_screen.dart';
 
 ///
 /// A Ride Preference From is a view to select:
@@ -60,9 +61,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
   void _onDeparturePressed() async {
     final Location? result = await Navigator.of(context).push<Location>(
       MaterialPageRoute(
-        builder: (context) => Scaffold(
-          body: const Placeholder(), // I will implement in bla 004
-        ),
+        builder: (context) => const LocationPickerScreen(),
       ),
     );
 
@@ -76,9 +75,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
   void _onArrivalPressed() async {
     final Location? result = await Navigator.of(context).push<Location>(
       MaterialPageRoute(
-        builder: (context) => Scaffold(
-          body: const Placeholder(), // I will implement in bla 004
-        ),
+        builder: (context) => const LocationPickerScreen(),
       ),
     );
 
