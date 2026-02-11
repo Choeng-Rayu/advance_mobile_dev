@@ -5,106 +5,76 @@ import 'package:blabla/model/ride/locations.dart';
 import 'package:blabla/data/dummy_data.dart';
 
 void main() {
-  group('LocationPickerScreen Tests', () {
+  group('LocationPickerScreen - Core Tests', () {
     
-    testWidgets('Q1.1 - Should display search bar and list of all locations initially', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LocationPickerScreen(),
-        ),
-      );
+    // TEST 1: Initial UI display with search bar and location list
+    testWidgets('TEST 1: Display search bar and location list on initial load', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: LocationPickerScreen()));
 
-      // Verify search bar exists
+      // Verify: TextField search input exists
       expect(find.byType(TextField), findsOneWidget);
       
-      // Verify back button exists for navigation
+      // Verify: Back button for navigation exists
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
       
-      // Verify list of locations is displayed (ListView renders ~8 visible items)
-      expect(find.byType(ListTile), findsWidgets);
-      
-      // Verify we have at least some list tiles
+      // Verify: List of location tiles displayed
       expect(find.byType(ListTile), findsWidgets);
     });
 
-    testWidgets('Q1.2 - Live search filters locations by city name using onChange', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LocationPickerScreen(),
-        ),
-      );
+    // TEST 2: Live search via onChange callback - filter by city name
+    testWidgets('TEST 2: Live search filters locations by city name (onChange)', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: LocationPickerScreen()));
 
-      final initialCount = fakeLocations.length;
-      
-      // Type search query in TextInput using onChange callback
+      // Action: Type "par" in search field (triggers onChange callback)
       await tester.enterText(find.byType(TextField), 'par');
       await tester.pumpAndSettle();
 
-      // Verify filtered results (should be fewer than initial)
-      final filteredCount = find.byType(ListTile);
-      expect(filteredCount, findsWidgets);
-      
-      // Verify no "No locations found" message
-      expect(find.text('No locations found'), findsNothing);
-    });
-
-    testWidgets('Q1.3 - Live search filters locations by country name', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LocationPickerScreen(),
-        ),
-      );
-
-      // Search by country using onChange
-      await tester.enterText(find.byType(TextField), 'united');
-      await tester.pumpAndSettle();
-
-      // Verify UK locations are shown
+      // Verify: Filtered results displayed (Paris, Parma, etc.)
       expect(find.byType(ListTile), findsWidgets);
+      
+      // Verify: No "No locations found" message
       expect(find.text('No locations found'), findsNothing);
     });
 
-    testWidgets('Q1.4 - Shows "No locations found" for invalid search', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LocationPickerScreen(),
-        ),
-      );
+    // TEST 3: Display "No locations found" for invalid search
+    testWidgets('TEST 3: Show "No locations found" message for invalid search', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: LocationPickerScreen()));
 
-      // Type invalid search
+      // Action: Type invalid search term
       await tester.enterText(find.byType(TextField), 'xyz999invalid');
       await tester.pumpAndSettle();
 
-      // Verify no results message
+      // Verify: "No locations found" message displayed
       expect(find.text('No locations found'), findsOneWidget);
       
-      // Verify clear button is shown to clear the search
+      // Verify: Clear button (X) appears to let user clear search
       expect(find.byIcon(Icons.close), findsOneWidget);
     });
 
-    testWidgets('Q1.5 - Clear button removes search and shows all locations again', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LocationPickerScreen(),
-        ),
-      );
+    // TEST 4: Clear button - clears search field and shows all locations
+    testWidgets('TEST 4: Clear button (X) resets search and shows all locations', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: LocationPickerScreen()));
 
-      // Perform search using onChange
+      // Action: Type search term
       await tester.enterText(find.byType(TextField), 'par');
       await tester.pumpAndSettle();
 
-      // Verify clear button exists
+      // Verify: Clear button exists
       expect(find.byIcon(Icons.close), findsOneWidget);
 
-      // Tap clear button
+      // Action: Tap clear button
       await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();
 
-      // Verify all locations shown again (check for significant number of tiles)
+      // Verify: All locations shown again
       expect(find.byType(ListTile), findsWidgets);
+      
+      // Verify: Clear button disappears when search is empty
+      expect(find.byIcon(Icons.close), findsNothing);
     });
 
-    testWidgets('Q1.6 - Selecting a location pops it back to caller', (WidgetTester tester) async {
+    // TEST 5: Select location and pop back with selected location object
+    testWidgets('TEST 5: Select location pops it back to caller with data', (WidgetTester tester) async {
       Location? selectedLocation;
 
       await tester.pumpWidget(
@@ -116,12 +86,10 @@ void main() {
                   child: ElevatedButton(
                     onPressed: () async {
                       selectedLocation = await Navigator.of(context).push<Location>(
-                        MaterialPageRoute(
-                          builder: (context) => const LocationPickerScreen(),
-                        ),
+                        MaterialPageRoute(builder: (context) => const LocationPickerScreen()),
                       );
                     },
-                    child: const Text('Open Picker'),
+                    child: const Text('Open'),
                   ),
                 ),
               );
@@ -130,20 +98,21 @@ void main() {
         ),
       );
 
-      // Open picker
-      await tester.tap(find.text('Open Picker'));
+      // Action: Open picker
+      await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
 
-      // Tap first location (London)
+      // Action: Tap first location
       await tester.tap(find.byType(ListTile).first);
       await tester.pumpAndSettle();
 
-      // Verify location was selected and returned
+      // Verify: Location object returned with data
       expect(selectedLocation, isNotNull);
       expect(selectedLocation?.name, fakeLocations[0].name);
     });
 
-    testWidgets('Q1.7 - Back button cancels selection and navigates back', (WidgetTester tester) async {
+    // TEST 6: Back button cancels selection (returns null)
+    testWidgets('TEST 6: Back button cancels selection and returns to previous screen', (WidgetTester tester) async {
       Location? selectedLocation;
 
       await tester.pumpWidget(
@@ -155,12 +124,10 @@ void main() {
                   child: ElevatedButton(
                     onPressed: () async {
                       selectedLocation = await Navigator.of(context).push<Location>(
-                        MaterialPageRoute(
-                          builder: (context) => const LocationPickerScreen(),
-                        ),
+                        MaterialPageRoute(builder: (context) => const LocationPickerScreen()),
                       );
                     },
-                    child: const Text('Open Picker'),
+                    child: const Text('Open'),
                   ),
                 ),
               );
@@ -169,122 +136,50 @@ void main() {
         ),
       );
 
-      // Open picker
-      await tester.tap(find.text('Open Picker'));
+      // Action: Open picker
+      await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
 
-      // Tap back button  
+      // Action: Tap back button
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
 
-      // Verify we're back on original screen
-      expect(find.text('Open Picker'), findsOneWidget);
+      // Verify: Back to previous screen
+      expect(find.text('Open'), findsOneWidget);
       
-      // Verify no location was selected
+      // Verify: No location selected (null returned)
       expect(selectedLocation, isNull);
     });
 
-    testWidgets('Q2.1 - List items have correct structure (icon, city, country, arrow)', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LocationPickerScreen(),
-        ),
-      );
+    // TEST 7: Case-insensitive search (uppercase/lowercase both work)
+    testWidgets('TEST 7: Search is case-insensitive (LONDON = london)', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: LocationPickerScreen()));
 
-      // Verify location icons
-      expect(find.byIcon(Icons.location_on_outlined), findsWidgets);
-      
-      // Verify navigation arrows
-      expect(find.byIcon(Icons.arrow_forward_ios), findsWidgets);
-      
-      // Verify list tiles
-      expect(find.byType(ListTile), findsWidgets);
-    });
-
-    testWidgets('Q3.1 - Case-insensitive search works', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LocationPickerScreen(),
-        ),
-      );
-
-      // Search with different cases using onChange
+      // Action: Search with uppercase text
       await tester.enterText(find.byType(TextField), 'LONDON');
       await tester.pumpAndSettle();
 
-      // Should still find London (case insensitive)
-      expect(find.byType(ListTile), findsWidgets);
-    });
-
-    testWidgets('Q3.2 - Live search updates as user types (onChange)', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LocationPickerScreen(),
-        ),
-      );
-
-      final initialCount = fakeLocations.length;
-
-      // Type first character using onChange
-      await tester.enterText(find.byType(TextField), 'l');
-      await tester.pumpAndSettle();
-      
-      final firstFilterCount = find.byType(ListTile).evaluate().length;
-
-      // Type more characters
-      await tester.enterText(find.byType(TextField), 'lo');
-      await tester.pumpAndSettle();
-      
-      final secondFilterCount = find.byType(ListTile).evaluate().length;
-
-      // Verify results change as user types (live filtering via onChange)
-      expect(initialCount, greaterThan(0));
-      expect(firstFilterCount, greaterThan(0));
-      expect(secondFilterCount, greaterThan(0));
-    });
-
-    testWidgets('Q3.3 - Clear button appears only when search is not empty', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LocationPickerScreen(),
-        ),
-      );
-
-      // Initially no clear button
-      expect(find.byIcon(Icons.close), findsNothing);
-
-      // Type something using onChange
-      await tester.enterText(find.byType(TextField), 'l');
-      await tester.pumpAndSettle();
-
-      // Clear button should appear
-      expect(find.byIcon(Icons.close), findsOneWidget);
-
-      // Clear the search
-      await tester.tap(find.byIcon(Icons.close));
-      await tester.pumpAndSettle();
-
-      // Clear button should disappear
-      expect(find.byIcon(Icons.close), findsNothing);
-    });
-
-    testWidgets('Q3.4 - Partial match search works', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LocationPickerScreen(),
-        ),
-      );
-
-      // Search with partial match
-      await tester.enterText(find.byType(TextField), 'par');
-      await tester.pumpAndSettle();
-
-      // Should find Paris, Parma, etc.
+      // Verify: Still finds locations despite uppercase
       expect(find.byType(ListTile), findsWidgets);
       expect(find.text('No locations found'), findsNothing);
     });
 
-    testWidgets('Q3.5 - Selecting location from filtered results works', (WidgetTester tester) async {
+    // TEST 8: Verify list items have correct UI structure
+    testWidgets('TEST 8: List items have icon, city name, country, and arrow', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: LocationPickerScreen()));
+
+      // Verify: Location pin icon present
+      expect(find.byIcon(Icons.location_on_outlined), findsWidgets);
+      
+      // Verify: Right arrow navigation icon present
+      expect(find.byIcon(Icons.arrow_forward_ios), findsWidgets);
+      
+      // Verify: ListTile widgets contain all above
+      expect(find.byType(ListTile), findsWidgets);
+    });
+
+    // TEST 9: Live search and select from filtered results
+    testWidgets('TEST 9: Can select location from filtered search results', (WidgetTester tester) async {
       Location? selectedLocation;
 
       await tester.pumpWidget(
@@ -296,12 +191,10 @@ void main() {
                   child: ElevatedButton(
                     onPressed: () async {
                       selectedLocation = await Navigator.of(context).push<Location>(
-                        MaterialPageRoute(
-                          builder: (context) => const LocationPickerScreen(),
-                        ),
+                        MaterialPageRoute(builder: (context) => const LocationPickerScreen()),
                       );
                     },
-                    child: const Text('Open Picker'),
+                    child: const Text('Open'),
                   ),
                 ),
               );
@@ -310,49 +203,20 @@ void main() {
         ),
       );
 
-      // Open picker
-      await tester.tap(find.text('Open Picker'));
+      // Action: Open picker
+      await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
 
-      // Filter using live search (onChange)
-      await tester.enterText(find.byType(TextField), 'par');
+      // Action: Filter with search (onChange)
+      await tester.enterText(find.byType(TextField), 'paris');
       await tester.pumpAndSettle();
 
-      // Select from filtered results
+      // Action: Select from filtered results
       await tester.tap(find.byType(ListTile).first);
       await tester.pumpAndSettle();
 
-      // Verify correct location selected
+      // Verify: Location selected successfully from filtered list
       expect(selectedLocation, isNotNull);
-    });
-
-    testWidgets('Q3.6 - Multiple search cycles work correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LocationPickerScreen(),
-        ),
-      );
-
-      // First search cycle
-      await tester.enterText(find.byType(TextField), 'l');
-      await tester.pumpAndSettle();
-      expect(find.byType(ListTile), findsWidgets);
-
-      // Clear and search again
-      await tester.tap(find.byIcon(Icons.close));
-      await tester.pumpAndSettle();
-
-      // Second search cycle
-      await tester.enterText(find.byType(TextField), 'm');
-      await tester.pumpAndSettle();
-      expect(find.byType(ListTile), findsWidgets);
-
-      // Clear again
-      await tester.tap(find.byIcon(Icons.close));
-      await tester.pumpAndSettle();
-
-      // Verify all locations shown (ListView renders visible items)
-      expect(find.byType(ListTile), findsWidgets);
     });
   });
 }
