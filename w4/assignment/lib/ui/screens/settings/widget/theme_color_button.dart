@@ -22,7 +22,10 @@ class ThemeColorButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: GestureDetector(
-        onTap: () => onTap(themeColor),
+        onTap: () {
+          // Call the callback to update provider
+          onTap(themeColor);
+        },
         child: Container(
           width: 100,
           height: 100,
