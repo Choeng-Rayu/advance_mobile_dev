@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/theme_color_provider.dart';
 import '../../theme/theme.dart';
 import 'widgets/download_controler.dart';
+import 'widgets/download_tile.dart';
 
 
 class DownloadsScreen extends StatelessWidget {
@@ -42,7 +43,15 @@ class DownloadsScreen extends StatelessWidget {
 
               SizedBox(height: 50),
 
-              // TODO - Add the Download tiles
+              // Display all Download tiles
+              Expanded(
+                child: ListView.builder(
+                  itemCount: controllers.length,
+                  itemBuilder: (context, index) {
+                    return DownloadTile(controller: controllers[index]);
+                  },
+                ),
+              ),
             ],
           ),
         );
