@@ -4,8 +4,6 @@ void main() {
   runApp(const MyApp());
 }
 
-
-
 enum CardType {
   red(Colors.red),
   blue(Colors.blue);
@@ -13,7 +11,6 @@ enum CardType {
   final Color color;
   const CardType(this.color);
 }
-
 
 class ColorService extends ChangeNotifier {
   final Map<CardType, int> _tapCounts = {
@@ -26,11 +23,9 @@ class ColorService extends ChangeNotifier {
 
   void increment(CardType type) {
     _tapCounts[type] = getCount(type) + 1;
-    notifyListeners(); // 🔥 This triggers ListenableBuilder
+    notifyListeners(); //  This triggers ListenableBuilder
   }
 }
-
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -45,7 +40,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 
 class Home extends StatefulWidget {
   final ColorService service;
@@ -89,7 +83,6 @@ class _HomeState extends State<Home> {
   }
 }
 
-
 class ColorTapsScreen extends StatelessWidget {
   final ColorService service;
 
@@ -100,17 +93,12 @@ class ColorTapsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Color Taps')),
       body: Column(
-        children: CardType.values
-            .map((type) => ColorTap(type: type, service: service))
-            .toList(),
+        children: CardType.values.map((type) => ColorTap(type: type, service: service)).toList(),
       ),
     );
   }
 }
-
 // Uses ListenableBuilder
-
-
 class ColorTap extends StatelessWidget {
   final CardType type;
   final ColorService service;
@@ -120,7 +108,7 @@ class ColorTap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: service, // 🔥 HERE IS ListenableBuilder
+      listenable: service, //  HERE IS ListenableBuilder
       builder: (context, _) {
         final tapCount = service.getCount(type);
 
@@ -147,10 +135,8 @@ class ColorTap extends StatelessWidget {
   }
 }
 
-
 // SCREEN STATISTICS
 // Uses ListenableBuilder
-
 
 class StatisticsScreen extends StatelessWidget {
   final ColorService service;
@@ -162,7 +148,7 @@ class StatisticsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Statistics')),
       body: ListenableBuilder(
-        listenable: service, // 🔥 HERE IS ListenableBuilder
+        listenable: service, //  HERE IS ListenableBuilder
         builder: (context, _) {
           return Center(
             child: Column(
