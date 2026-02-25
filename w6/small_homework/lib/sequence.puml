@@ -1,0 +1,24 @@
+@startuml
+!pragma teoz true
+
+title Sequence Diagram
+
+actor User
+participant "main_dev.dart" as MainDev
+participant "main_common.dart" as MainCommon
+participant "MultiProvider" as MultiProvider
+participant "LibraryScreen" as LibraryScreen
+participant "SongRepositoryMock" as SongRepoMock
+
+User -> MainDev: Start Application
+MainDev -> MainCommon: mainCommon(providers)
+MainCommon -> MultiProvider: runApp(MultiProvider)
+MultiProvider -> LibraryScreen: Build LibraryScreen
+LibraryScreen -> LibraryScreen: context.read<SongRepository>()
+LibraryScreen -> SongRepoMock: fetchSongs()
+SongRepoMock -> SongRepoMock: Get mock songs from list
+SongRepoMock --> LibraryScreen: List<Song>
+LibraryScreen -> LibraryScreen: Build ListView with songs
+LibraryScreen --> User: Display songs in UI
+
+@enduml
