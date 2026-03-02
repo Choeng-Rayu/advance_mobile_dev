@@ -5,13 +5,13 @@ import '../../model/settings/app_settings.dart';
 
 class AppSettingsState extends ChangeNotifier {
   AppSettings? _appSettings;
-  Appsettingrepository _repo;
+  Appsettingrepository repo;
 
-  AppSettingsState(this._repo);
+  AppSettingsState({required this.repo});
 
   Future<void> init() async {
     // Might be used to load data from repository
-    _repo.load();
+    repo.load();
     notifyListeners();
   }
 
