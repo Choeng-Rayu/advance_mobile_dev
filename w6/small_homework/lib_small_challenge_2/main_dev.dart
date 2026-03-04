@@ -8,7 +8,6 @@ import 'data/repositories/songs/song_repository_mock.dart';
 import 'ui/states/player_state.dart';
 import 'ui/states/settings_state.dart';
 
-
 /// Configure provider dependencies for dev environment
 List<SingleChildWidget> get devProviders {
   return [
@@ -19,7 +18,13 @@ List<SingleChildWidget> get devProviders {
     ChangeNotifierProvider<PlayerState>(create: (_) => PlayerState()),
 
     // 3 - Inject the  app setting state
-    ChangeNotifierProvider<AppSettingsState>(create: (_) => AppSettingsState(repo: Appsettingrepositorymock())),
+    ChangeNotifierProvider<AppSettingsState>(
+      create: (_) {
+        final state = AppSettingsState(Appsettingrepositorymock());
+        state.init();
+        return state;
+      },
+    ),
   ];
 }
 

@@ -2,7 +2,8 @@ import '../../model/settings/app_settings.dart';
 import 'AppSettingRepository.dart';
 
 class Appsettingrepositorymock implements Appsettingrepository {
-  AppSettings appSettings = AppSettings(themeColor: ThemeColor.blue);
+  AppSettings appSettings = AppSettings(themeColor: ThemeColor.pink);
+  // Appsettingrepositorymock
   @override
   Future<AppSettings> load() async {
     return appSettings;

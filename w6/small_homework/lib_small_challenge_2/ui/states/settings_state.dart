@@ -5,13 +5,13 @@ import '../../model/settings/app_settings.dart';
 
 class AppSettingsState extends ChangeNotifier {
   AppSettings? _appSettings;
-  Appsettingrepository repo;
+  Appsettingrepository _repo;
 
-  AppSettingsState({required this.repo});
+  AppSettingsState(this. _repo);
 
   Future<void> init() async {
     // Might be used to load data from repository
-    repo.load();
+    _appSettings = await _repo.load();
     notifyListeners();
   }
 
@@ -20,7 +20,7 @@ class AppSettingsState extends ChangeNotifier {
   Future<void> changeTheme(ThemeColor themeColor) async {
     if (_appSettings == null) return;
     _appSettings = _appSettings!.copyWith(themeColor: themeColor);
-
+    await _repo.save(_appSettings!);
     notifyListeners();
   }
 }
