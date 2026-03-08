@@ -21,7 +21,7 @@ class FavoriteScreen extends StatelessWidget {
     AppSettingsState settingsState = context.read<AppSettingsState>();
 
     // 3 - Watch the globbal player state
-    PlayerState playerState = context.read<PlayerState>();
+    PlayerState playerState = context.watch<PlayerState>();
 
     return Container(
       color: settingsState.theme.backgroundColor,
