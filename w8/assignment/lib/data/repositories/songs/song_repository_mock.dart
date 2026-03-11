@@ -1,9 +1,12 @@
 // song_repository_mock.dart
 
 import '../../../model/songs/song.dart';
+import '../../../model/async_value.dart';
 import 'song_repository.dart';
 
 class SongRepositoryMock implements SongRepository {
+  static int _callCount = 0;
+
   final List<Song> _songs = [
     Song(
       id: 's1',
@@ -38,10 +41,22 @@ class SongRepositoryMock implements SongRepository {
   ];
 
   @override
-  Future<List<Song>> fetchSongs() async {
-    await Future.delayed(Duration(minutes: 2), () {});
- 
-    return _songs;
+  Future<AsyncValue<List<Song>>> fetchSongs() async {
+    // Increment call count
+    _callCount++;
+
+    // Simulate a delay of 3 seconds
+    await Future.delayed(const Duration(seconds: 3));
+
+    // Simulate an error every 2 tries (on even call counts)
+    if (_callCount % 2 == 0) {
+      return AsyncValue.error(
+        Exception('Failed to fetch songs from the database'),
+      );
+    }
+
+    // Return success with songs data
+    return AsyncValue.data(_songs);
   }
 
   @override
@@ -50,7 +65,7 @@ class SongRepositoryMock implements SongRepository {
 
     // - After the delay : Find the song of given id in the list of songs and return it
 
-    // - If not found : Throw an error with the message “no song found for id 25 in the database"
+    // - If not found : Throw an error with the message "no song found for id 25 in the database"
 
     return Future.delayed(Duration.zero); // TO CHANGE !
   }
