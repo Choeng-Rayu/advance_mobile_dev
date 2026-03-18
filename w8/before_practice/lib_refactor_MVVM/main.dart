@@ -5,62 +5,63 @@ import 'data/repositories/ride_preference/ride_preference_repository_mock.dart';
 import 'data/repositories/location/locations_repository.dart';
 import 'data/repositories/ride/rides_repository.dart';
 import 'data/repositories/ride_preference/ride_preference_repository.dart';
+import 'ui/theme/theme.dart';
+import 'ui/screens/home/home_screen.dart';
+import 'ui/states/ride_perference_state.dart';
+
+/// Global service locator for repositories and states
+class ServiceLocator {
+  static late LocationRepository _locationRepository;
+  static late RideRepository _rideRepository;
+  static late RidePreferenceRepository _ridePreferenceRepository;
+  static late RidePreferenceState _ridePreferenceState;
+
+  /// Initialize repositories and global states
+  static void setup() {
+    _locationRepository = LocationRepositoryMock();
+    _rideRepository = RideRepositoryMock();
+    _ridePreferenceRepository = RidePreferenceRepositoryMock();
+    _ridePreferenceState = RidePreferenceState();
+  }
+
+  // Getters for global access to repositories
+  static LocationRepository get locationRepository => _locationRepository;
+  static RideRepository get rideRepository => _rideRepository;
+  static RidePreferenceRepository get ridePreferenceRepository =>
+      _ridePreferenceRepository;
+
+  // Getter for global state
+  static RidePreferenceState get ridePreferenceState => _ridePreferenceState;
+}
 
 void main() {
+  // Initialize all repositories globally
+  ServiceLocator.setup();
   runApp(const BlaBlaApp());
 }
 
-class BlaBlaApp extends StatelessWidget {
+class BlaBlaApp extends StatefulWidget {
   const BlaBlaApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Initialize repositories for dependency injection
-    final LocationRepository locationRepository = LocationRepositoryMock();
-    final RideRepository rideRepository = RideRepositoryMock();
-    final RidePreferenceRepository ridePreferenceRepository =
-        RidePreferenceRepositoryMock();
+  State<BlaBlaApp> createState() => _BlaBlaAppState();
+}
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(title: const Text('BlaBlaCar MVVM')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Repositories Initialized Successfully!'),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => _testRepositories(
-                  locationRepository,
-                  rideRepository,
-                  ridePreferenceRepository,
-                ),
-                child: const Text('Test Repositories'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+class _BlaBlaAppState extends State<BlaBlaApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the global RidePreferenceState
+    ServiceLocator.ridePreferenceState.initialize();
   }
 
-  Future<void> _testRepositories(
-    LocationRepository locationRepository,
-    RideRepository rideRepository,
-    RidePreferenceRepository ridePreferenceRepository,
-  ) async {
-    // Test LocationRepository
-    final locations = await locationRepository.getAllLocations();
-    debugPrint('Locations fetched: ${locations.length}');
-
-    // Test RideRepository
-    final rides = await rideRepository.getAllRides();
-    debugPrint('Rides fetched: ${rides.length}');
-
-    // Test RidePreferenceRepository
-    final preferences = await ridePreferenceRepository.getAllPreferences();
-    debugPrint('Preferences fetched: ${preferences.length}');
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'BlaBlaCar MVVM',
+      theme: blaTheme,
+      home: const HomeScreen(),
+    );
   }
 }
