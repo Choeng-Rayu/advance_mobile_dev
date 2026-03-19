@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'data/repositories/location/location_repository_mock.dart';
 import 'data/repositories/ride/ride_repository_mock.dart';
 import 'data/repositories/ride_preference/ride_preference_repository_mock.dart';
@@ -15,42 +16,42 @@ class BlaBlaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize repositories for dependency injection
-    final LocationRepository locationRepository = LocationRepositoryMock();
-    final RideRepository rideRepository = RideRepositoryMock();
-    final RidePreferenceRepository ridePreferenceRepository =
-        RidePreferenceRepositoryMock();
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(title: const Text('BlaBlaCar MVVM')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Repositories Initialized Successfully!'),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => _testRepositories(
-                  locationRepository,
-                  rideRepository,
-                  ridePreferenceRepository,
+    return MultiProvider(
+      providers: [
+        Provider<LocationRepository>(create: (_) => LocationRepositoryMock()),
+        Provider<RideRepository>(create: (_) => RideRepositoryMock()),
+        Provider<RidePreferenceRepository>(
+          create: (_) => RidePreferenceRepositoryMock(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          appBar: AppBar(title: const Text('BlaBlaCar MVVM')),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Repositories Initialized Successfully!'),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => _testRepositories(context),
+                  child: const Text('Test Repositories'),
                 ),
-                child: const Text('Test Repositories'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Future<void> _testRepositories(
-    LocationRepository locationRepository,
-    RideRepository rideRepository,
-    RidePreferenceRepository ridePreferenceRepository,
-  ) async {
+  Future<void> _testRepositories(BuildContext context) async {
+    // Get repositories synchronously before async operations
+    final locationRepository = context.read<LocationRepository>();
+    final rideRepository = context.read<RideRepository>();
+    final ridePreferenceRepository = context.read<RidePreferenceRepository>();
+
     // Test LocationRepository
     final locations = await locationRepository.getAllLocations();
     debugPrint('Locations fetched: ${locations.length}');
