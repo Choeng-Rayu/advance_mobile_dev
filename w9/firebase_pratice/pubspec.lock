@@ -41,22 +41,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
-  cupertino:
-    dependency: "direct main"
-    description:
-      name: cupertino
-      sha256: c5dcd6907f94154e3a1e44b1046216d1d78dcfba752b2144bde5c4a23b949da1
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1"
   cupertino_icons:
     dependency: "direct main"
     description:
       name: cupertino_icons
-      sha256: ba631d1c7f7bef6b729a622b7b752645a2d076dba9976925b8f25725a30e1ee6
+      sha256: "41e005c33bd814be4d3096aff55b1908d419fde52ca656c8c47719ec745873cd"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.8"
+    version: "1.0.9"
   fake_async:
     dependency: transitive
     description:
@@ -139,14 +131,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.17.0"
-  nested:
-    dependency: transitive
-    description:
-      name: nested
-      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   path:
     dependency: transitive
     description:
@@ -155,14 +139,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
-  provider:
-    dependency: "direct main"
-    description:
-      name: provider
-      sha256: "4e82183fa20e5ca25703ead7e05de9e4cceed1fbd1eadc1ac3cb6f565a09f272"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.1.5+1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -233,5 +209,5 @@ packages:
     source: hosted
     version: "15.0.2"
 sdks:
-  dart: ">=3.10.7 <4.0.0"
+  dart: ">=3.10.8 <4.0.0"
   flutter: ">=3.18.0-18.0.pre.54"
