@@ -37,5 +37,23 @@ class SongRepositoryFirebase extends SongRepository {
   }
 
   @override
-  Future<Song?> fetchSongById(String id) async {}
+  Future<Song?> fetchSongById(String id) async {
+    final Uri songUri = Uri.https(
+      'week-8-practice-20451-default-rtdb.asia-southeast1.firebasedatabase.app',
+      '/week9/songs/$id.json',
+    );
+
+    final http.Response response = await http.get(songUri);
+
+    if (response.statusCode == 200) {
+      final decode = json.decode(response.body);
+      if (decode == null) {
+        return null;
+      }
+      final Map<String, dynamic> songJson = Map<String, dynamic>.from(decode);
+      return SongDto.fromJson(id, songJson);
+    } else {
+      throw Exception('Failed to load song with id: $id');
+    }
+  }
 }
