@@ -74,4 +74,33 @@ class LibraryViewModel extends ChangeNotifier {
 
   void start(Song song) => playerState.start(song);
   void stop(Song song) => playerState.stop();
+  
+  Future<void> toggleLikeSong(String songId, bool currentLikedState) async {
+    try {
+      // Optimistically update the UI
+      if (data.state == AsyncValueState.success) {
+        List<LibraryItemData> currentData = data.data!;
+        List<LibraryItemData> updatedData = currentData.map((item) {
+          if (item.song.id == songId) {
+            return LibraryItemData(
+              song: item.song.copyWith(isLiked: !currentLikedState),
+              artist: item.artist,
+            );
+          }
+          return item;
+        }).toList();
+        
+        this.data = AsyncValue.success(updatedData);
+        notifyListeners();
+      }
+      
+      // Call repository to update Firebase
+      await songRepository.toggleLikeSong(songId, currentLikedState);
+      
+    } catch (e) {
+      // Revert optimistic update on error
+      fetchSong();
+      rethrow;
+    }
+  }
 }

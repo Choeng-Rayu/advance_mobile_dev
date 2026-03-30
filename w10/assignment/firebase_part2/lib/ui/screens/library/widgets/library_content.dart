@@ -35,6 +35,22 @@ class LibraryContent extends StatelessWidget {
             onTap: () {
               mv.start(data[index].song);
             },
+            onLike: () async {
+              try {
+                await mv.toggleLikeSong(
+                  data[index].song.id,
+                  data[index].song.isLiked,
+                );
+              } catch (e) {
+                // Show error message to user
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Failed to toggle like: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
           ),
         );
     }

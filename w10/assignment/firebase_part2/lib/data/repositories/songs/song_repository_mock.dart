@@ -22,4 +22,10 @@ class SongRepositoryMock implements SongRepository {
       );
     });
   }
+  
+  @override
+  Future<void> toggleLikeSong(String songId, bool currentLikedState) async {
+    // Mock implementation - does nothing
+    return Future.delayed(Duration(milliseconds: 500));
+  }
 }
