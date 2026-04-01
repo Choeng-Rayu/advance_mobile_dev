@@ -5,9 +5,9 @@ class ArtistRepositoryMock implements ArtistRepository {
   final List<Artist> _artists = [];
 
   @override
-  Future<List<Artist>> fetchArtists() async {
+  Future<List<Artist>> fetchArtists({bool forceFetch = false}) async {
     return Future.delayed(Duration(seconds: 4), () {
-      throw _artists;
+      return _artists;
     });
   }
 

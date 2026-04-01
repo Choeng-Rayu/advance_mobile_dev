@@ -18,39 +18,49 @@ class LibraryContent extends StatelessWidget {
 
     Widget content;
     switch (asyncValue.state) {
-      
       case AsyncValueState.loading:
         content = Center(child: CircularProgressIndicator());
         break;
       case AsyncValueState.error:
-        content = Center(child: Text('error = ${asyncValue.error!}', style: TextStyle(color: Colors.red),));
+        content = Center(
+          child: Text(
+            'error = ${asyncValue.error!}',
+            style: TextStyle(color: Colors.red),
+          ),
+        );
 
       case AsyncValueState.success:
         List<LibraryItemData> data = asyncValue.data!;
-        content = ListView.builder(
-          itemCount: data.length,
-          itemBuilder: (context, index) => LibraryItemTile(
-            data: data[index],
-            isPlaying: mv.isSongPlaying(data[index].song),
-            onTap: () {
-              mv.start(data[index].song);
-            },
-            onLike: () async {
-              try {
-                await mv.toggleLikeSong(
-                  data[index].song.id,
-                  data[index].song.isLiked,
-                );
-              } catch (e) {
-                // Show error message to user
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Failed to toggle like: $e'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
+        content = RefreshIndicator(
+          onRefresh: () async {
+            // Force fetch data from API
+            mv.fetchSong(forceFetch: true);
+          },
+          child: ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) => LibraryItemTile(
+              data: data[index],
+              isPlaying: mv.isSongPlaying(data[index].song),
+              onTap: () {
+                mv.start(data[index].song);
+              },
+              onLike: () async {
+                try {
+                  await mv.toggleLikeSong(
+                    data[index].song.id,
+                    data[index].song.isLiked,
+                  );
+                } catch (e) {
+                  // Show error message to user
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to toggle like: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+            ),
           ),
         );
     }

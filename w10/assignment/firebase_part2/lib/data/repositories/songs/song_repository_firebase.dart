@@ -7,54 +7,72 @@ import '../../dtos/song_dto.dart';
 import 'song_repository.dart';
 
 class SongRepositoryFirebase extends SongRepository {
-  final String baseUrl = 'week9-firebase-8740e-default-rtdb.asia-southeast1.firebasedatabase.app';
-  
+  final String baseUrl =
+      'week9-firebase-8740e-default-rtdb.asia-southeast1.firebasedatabase.app';
+
   final Uri songsUri = Uri.https(
     'week9-firebase-8740e-default-rtdb.asia-southeast1.firebasedatabase.app',
     '/songs.json',
   );
 
+  // In-memory cache
+  List<Song>? _cachedSongs;
+
   @override
-  Future<List<Song>> fetchSongs() async {
+  Future<List<Song>> fetchSongs({bool forceFetch = false}) async {
+    // 1. Return cache if available and not forcing fetch
+    if (_cachedSongs != null && !forceFetch) {
+      return _cachedSongs!;
+    }
+
+    // 2. Otherwise fetch from API
     final http.Response response = await http.get(songsUri);
 
     if (response.statusCode == 200) {
-      // 1 - Send the retrieved list of songs
+      // Parse the retrieved list of songs
       Map<String, dynamic> songJson = json.decode(response.body);
 
       List<Song> result = [];
       for (final entry in songJson.entries) {
         result.add(SongDto.fromJson(entry.key, entry.value));
       }
+
+      // 3. Store in memory
+      _cachedSongs = result;
+
       return result;
     } else {
-      // 2- Throw expcetion if any issue
+      // Throw exception if any issue
       throw Exception('Failed to load posts');
     }
   }
 
   @override
-  Future<Song?> fetchSongById(String id) async {}
-  
+  Future<Song?> fetchSongById(String id) async {
+    return null;
+  }
+
   @override
   Future<void> toggleLikeSong(String songId, bool currentLikedState) async {
-    final Uri likeUri = Uri.https(
-      baseUrl,
-      '/songs/$songId/isLiked.json',
-    );
-    
+    final Uri likeUri = Uri.https(baseUrl, '/songs/$songId/isLiked.json');
+
     // Toggle the like state
     final bool newLikedState = !currentLikedState;
-    
+
     // Use PUT to update the isLiked field
     final http.Response response = await http.put(
       likeUri,
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newLikedState),
     );
-    
+
     if (response.statusCode != 200) {
-      throw Exception('Failed to toggle like: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Failed to toggle like: ${response.statusCode} - ${response.body}',
+      );
     }
+
+    // Clear cache since data changed
+    _cachedSongs = null;
   }
 }
